@@ -2,6 +2,15 @@
 
 Voici une sélection de paquets `apt` utiles pour bien démarrer avec ton environnement WSL2 sous Ubuntu. Pour les installer, utilise la commande `sudo apt install <nom_du_paquet>`. N'oublie pas de faire un `sudo apt update` avant pour rafraîchir la liste des paquets.
 
+1. `sudo apt update` : Met à jour la liste lcale des paquets disponibles depuis les dépôts configurés.
+2. `sudo apt install <nom_du_paquet>` : Installe un nouveau paquet et ses dépendances.
+3. `sudo apt upgrade` : Met à jour tous les paquets déjà installés vers leurs dernières versions, en se basant sur la liste rafraîchie par sudo apt update.
+4. `sudo apt full-upgrade` : Supprime un paquet, mais conserve généralement ses fichiers de configuration.
+5. `sudo apt remove <nom_du_paquet>` : Supprime un paquet, mais conserve généralement ses fichiers de configuration.
+6. `sudo apt purge <nom_du_paquet>` : Supprime un paquet ET tous ses fichiers de configuration.
+7. `sudo apt autoremove` : Supprime les paquets qui ont été installés comme dépendances pour d'autres paquets, mais qui ne sont plus nécessaires. Utile pour nettoyer le système.
+8. `sudo apt clean` : Vide le cache local des paquets téléchargé
+
 ### 1. Essentiels Système et Utilitaires Courants
 Ces paquets sont fondamentaux pour la compilation, la gestion de fichiers et quelques outils de diagnostic.
 
