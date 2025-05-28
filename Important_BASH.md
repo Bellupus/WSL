@@ -1,6 +1,6 @@
 ## Guide Complet du Débutant pour la Ligne de Commande (Linux/WSL)
 
-Bienvenue dans le monde de la ligne de commande ! Au début, ça peut sembler intimidant, mais avec quelques concepts clés, tu verras que c'est un outil incroyablement puissant. Cette note est là pour t'aider à démarrer.
+Bienvenue dans le monde de la ligne de commande. Cette note est là pour t'aider à démarrer.
 
 ### ⚠️ Commandes et Situations Exigeant une Attention Particulière ⚠️
 Avant de plonger dans les détails, il est crucial de connaître certaines commandes très puissantes qui peuvent causer des dommages irréversibles si elles sont mal utilisées, ainsi que quelques bonnes pratiques.
@@ -35,8 +35,8 @@ Avant de plonger dans les détails, il est crucial de connaître certaines comma
 Pour bien comprendre les tutoriels et la documentation, voici quelques termes fondamentaux :
 
 * **Shell (et Bash)** :
-    * *Définition* : C'est l'interpréteur de commandes, une interface textuelle entre toi et le système d'exploitation. Il prend tes commandes tapées au clavier et demande au système de les exécuter.
-    * *Bash (Bourne Again SHell)* : C'est l'un des shells les plus populaires et celui par défaut sur de nombreuses distributions Linux, y compris Ubuntu que tu utilises avec WSL. Quand tu ouvres un terminal, c'est généralement Bash qui t'attend.
+    * *Définition* : Le Shell est le programme avec lequel tu "parles" à ton système Linux en tapant des commandes.
+    * *Pour savoir* : `echo $SHELL` ou `ps-p $$` (Par défaut : Sur WSL2, c-est par défault Bash)
 * **Noyau (Kernel)** :
     * *Définition* : C'est le cœur du système d'exploitation (Linux dans notre cas). Il gère les ressources matérielles de l'ordinateur (processeur, mémoire, disques) et permet aux logiciels de fonctionner. Le shell communique avec le noyau.
 * **Distribution Linux (Distro)** :
@@ -177,4 +177,5 @@ Personne ne connaît toutes les commandes et toutes leurs options par cœur ! Ap
     * `tail -n 5 <fichier>` : Affiche les 5 dernières lignes.
     * `tail -f <fichier_log>` : Très utile pour suivre un fichier de log en temps réel (les nouvelles lignes s'affichent au fur et à mesure). `Ctrl + C` pour arrêter.
 * `clear` : Efface l'écran du terminal (pour y voir plus clair).
-* 
+
+C'est un bon point de départ ! N'hésite pas à expérimenter (dans des dossiers de test au début pour ne rien casser d'important). La pratique est la clé.
