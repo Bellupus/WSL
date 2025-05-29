@@ -123,6 +123,93 @@ Lorsqu'on débute, lire des exemples de commandes ou la documentation peut être
 * **Crochets `[ ]` dans la Documentation** : Quand vous lisez une page de manuel (`man`) ou une aide (`--help`), ce qui est entre crochets `[ ]` est généralement **optionnel**. Vous n'êtes pas obligé de le fournir pour que la commande fonctionne, mais ça vous donne des possibilités supplémentaires.
 * **Sensibilité à la casse (Rappel Important)** : Linux fait la différence entre majuscules et minuscules. `MonDossier` et `mondossier` sont deux choses distinctes. Soyez toujours vigilant !
 
+### ✨ Opérateurs, Options et Symboles Utiles en Ligne de Commande
+
+Au-delà des commandes elles-mêmes, certains opérateurs et options modifient leur comportement ou permettent de les combiner. En voici quelques-uns parmi les plus courants :
+
+* **`&&` (ET logique)**
+    * **Rôle** : Permet d'enchaîner plusieurs commandes. La commande située *après* `&&` ne s'exécute **que si** la commande *avant* `&&` a réussi (c'est-à-dire, s'est terminée sans erreur, généralement avec un code de sortie de 0).
+    * **Exemple** :
+        ```bash
+        sudo apt update && sudo apt upgrade
+        ```
+        Ici, `sudo apt upgrade` ne sera lancé que si `sudo apt update` s'est terminé avec succès. C'est utile pour s'assurer qu'une étape dépendante ne commence pas si la précédente a échoué.
+    * **Quand l'utiliser ?** Idéal lorsque l'exécution d'une commande dépend du succès de la précédente.
+
+* **`-y` (Option "oui" automatique)**
+    * **Rôle** : C'est une *option* (ou "flag") que l'on peut passer à certaines commandes. Elle répond automatiquement "oui" (ou "yes", "o") à toutes les questions de confirmation que la commande pourrait poser pendant son exécution.
+    * **Exemple** :
+        ```bash
+        sudo apt install <nom_du_paquet> -y
+        ```
+        Lors de l'installation d'un paquet, `apt` demande souvent confirmation. Avec `-y`, cette étape est sautée et l'installation procède directement.
+    * **Quand l'utiliser ?** Pratique pour les scripts ou lorsque vous êtes absolument sûr de l'action et que vous ne voulez pas être interrompu. **Attention :** Utilisez avec prudence, car cela supprime une sécurité contre les actions non désirées.
+
+* **`;` (Séparateur de commandes)**
+    * **Rôle** : Permet d'enchaîner plusieurs commandes sur une seule ligne. Les commandes sont exécutées séquentiellement (l'une après l'autre), **quelle que soit l'issue (succès ou échec) de la commande précédente**.
+    * **Exemple** :
+        ```bash
+        cd <votre_dossier> ; ls -l ; echo "Terminé !"
+        ```
+        Le terminal va d'abord se déplacer dans `<votre_dossier>`, puis lister son contenu, puis afficher "Terminé !", même si `cd` ou `ls` rencontraient une erreur.
+    * **Quand l'utiliser ?** Pour exécuter une suite de tâches indépendantes les unes des autres.
+
+* **`||` (OU logique)**
+    * **Rôle** : Permet d'enchaîner plusieurs commandes. La commande située *après* `||` ne s'exécute **que si** la commande *avant* `||` a **échoué** (c'est-à-dire, s'est terminée avec une erreur).
+    * **Exemple** :
+        ```bash
+        make || echo "La compilation a échoué. Veuillez vérifier les erreurs."
+        ```
+        Si la commande `make` (souvent utilisée pour compiler du code) échoue, alors le message d'erreur sera affiché. Si `make` réussit, la partie après `||` est ignorée.
+    * **Quand l'utiliser ?** Utile pour exécuter une action de secours ou afficher un message en cas d'échec.
+
+* **`|` (Pipe ou "Tube")**
+    * **Rôle** : C'est l'un des outils les plus puissants. Il prend la sortie standard de la commande à sa gauche et l'utilise comme entrée standard pour la commande à sa droite. Cela permet de "connecter" des commandes entre elles.
+    * **Exemple** :
+        ```bash
+        ls -la /etc | grep "conf"
+        ```
+        La commande `ls -la /etc` liste tous les fichiers et dossiers dans `/etc`. Sa sortie (la liste) est envoyée à `grep "conf"`, qui filtre cette liste pour n'afficher que les lignes contenant le mot "conf".
+    * **Quand l'utiliser ?** Très fréquent pour filtrer, trier ou traiter la sortie d'une commande avec une autre.
+
+* **`>` (Redirection de sortie - Écraser)**
+    * **Rôle** : Redirige la sortie standard d'une commande vers un fichier. Si le fichier n'existe pas, il est créé. S'il existe, **son contenu est écrasé** par la nouvelle sortie.
+    * **Exemple** :
+        ```bash
+        ls -l > <liste_des_fichiers.txt>
+        ```
+        La liste des fichiers produite par `ls -l` ne s'affichera pas dans le terminal, mais sera écrite dans le fichier `liste_des_fichiers.txt`, remplaçant son contenu précédent.
+    * **Quand l'utiliser ?** Pour sauvegarder la sortie d'une commande dans un fichier.
+
+* **`>>` (Redirection de sortie - Ajouter)**
+    * **Rôle** : Similaire à `>`, mais au lieu d'écraser le contenu du fichier, la sortie de la commande est **ajoutée à la fin** du fichier. Si le fichier n'existe pas, il est créé.
+    * **Exemple** :
+        ```bash
+        date >> <journal.log>
+        ```
+        La date et l'heure actuelles seront ajoutées à la fin du fichier `journal.log` chaque fois que cette commande est exécutée.
+    * **Quand l'utiliser ?** Idéal pour créer des fichiers de log ou ajouter des informations à un fichier existant sans perdre les données précédentes.
+
+* **`*` (Astérisque - Caractère générique ou "wildcard")**
+    * **Rôle** : Utilisé pour la correspondance de noms de fichiers. L'astérisque représente **n'importe quelle séquence de caractères** (y compris aucun caractère).
+    * **Exemple** :
+        ```bash
+        ls *.txt
+        ```
+        Liste tous les fichiers dans le dossier courant dont le nom se termine par `.txt`. `rapport_*.doc` pourrait correspondre à `rapport_final.doc` ou `rapport_Janvier.doc`.
+    * **Quand l'utiliser ?** Pour agir sur plusieurs fichiers à la fois sans avoir à les nommer tous individuellement.
+
+* **`?` (Point d'interrogation - Caractère générique)**
+    * **Rôle** : Similaire à `*`, mais le point d'interrogation représente **exactement un seul caractère**.
+    * **Exemple** :
+        ```bash
+        ls image?.png
+        ```
+        Pourrait lister `image1.png`, `imageA.png`, mais pas `image10.png` ni `image.png`.
+    * **Quand l'utiliser ?** Pour une correspondance plus précise lorsque vous savez qu'un seul caractère varie.
+
+Ces opérateurs et options enrichissent considérablement ce que vous pouvez faire en une seule ligne de commande !
+
 ## 2. Les Bases Essentielles pour Écrire et Interagir avec le Terminal
 * **Sensibilité à la casse (Case Sensitivity)** : (Répétition, car crucial !) `MonFichier.txt` est un fichier **différent** de `monfichier.txt` ou `Monfichier.TXT`. Soyez toujours attentif à la casse.
 * **Espaces dans les noms** : Si un nom de fichier ou de dossier contient des espaces, vous avez deux options (choisissez celle que vous préférez) :
@@ -172,29 +259,14 @@ Imaginez le système de fichiers comme une grande armoire (la racine `/`) conten
     * Pour accéder à votre disque D: : `cd /mnt/d`
     * Et ainsi de suite. Une fois dans `/mnt/c`, vous pouvez naviguer comme d'habitude (ex: `cd /mnt/c/Users/<VotreNomWindows>/Documents`).
 
-## 4. Opérations de Base sur les Fichiers et Dossiers (Rappel)
-* `ls` : Liste le contenu du dossier courant.
-    * `ls -l` : Affichage long (avec détails : permissions, taille, date).
-    * `ls -a` : Affiche aussi les fichiers et dossiers cachés (ceux qui commencent par un `.`).
-    * `ls -lh` : Affichage long avec tailles lisibles par l'humain (Ko, Mo, Go).
-* `pwd` : Affiche le chemin complet du dossier où vous vous trouvez actuellement (Print Working Directory).
-* `mkdir <nom_dossier>` : Crée un nouveau dossier.
-    * `mkdir -p <DossierParent>/<NouveauDossier>` : Crée `<NouveauDossier>` et `<DossierParent>` s'il n'existe pas.
-* `touch <nom_fichier>` : Crée un fichier vide (ou met à jour la date de modification s'il existe déjà).
-* `cp <source> <destination>` : Copie un fichier ou un dossier.
-    * `cp -r <dossier_source> <dossier_destination>` : Pour copier un dossier et son contenu (récursif).
-* `mv <source> <destination>` : Déplace ou renomme un fichier ou un dossier.
-* `rm <fichier>` : Supprime un fichier.
-* `rm -r <dossier>` : Supprime un dossier et tout son contenu (soyez prudent ! Voir `rm -rf <chemin>` plus haut).
-
-## 5. Obtenir de l'Aide
+## 4. Obtenir de l'Aide
 Personne ne connaît toutes les commandes et toutes leurs options par cœur ! Apprendre à chercher de l'aide est une compétence en soi.
 
 * `<nom_commande> --help` : Affiche une aide rapide et concise pour `<nom_commande>`, directement dans le terminal. C'est souvent le premier réflexe.
 * `man <nom_commande>` (manuel) : Ouvre le manuel complet et détaillé pour `<nom_commande>`. C'est la référence la plus complète.
     * Utilisez les flèches pour naviguer, `Page Suivante`/`Page Précédente` (ou `Espace`/`b`), `/` suivi d'un mot pour chercher dans le manuel, `n` pour la prochaine occurrence de votre recherche, et `q` pour quitter.
 
-## 6. Le Pouvoir de `sudo` (et la Sagesse qui va avec)
+## 5. Le Pouvoir de `sudo` (et la Sagesse qui va avec)
 * `sudo <commande>` (`SuperUser Do`) : Exécute la `<commande>` avec les droits d'administrateur (superutilisateur ou "root"). Vous devrez entrer votre mot de passe utilisateur (celui de votre session Linux/WSL).
 * **Quand l'utiliser ?** Principalement pour :
     1.  Installer ou supprimer des logiciels (`sudo apt install <nom_du_paquet>`).
@@ -202,15 +274,5 @@ Personne ne connaît toutes les commandes et toutes leurs options par cœur ! Ap
     3.  Démarrer ou arrêter des services système.
     4.  Effectuer des opérations qui nécessitent des privilèges élevés.
 * **Avec Prudence !** Une commande exécutée avec `sudo` peut potentiellement endommager votre système si vous ne savez pas ce que vous faites. Vérifiez toujours deux fois avant de lancer une commande avec `sudo`. En cas de doute, ne le faites pas ou demandez conseil. "Un grand pouvoir implique de grandes responsabilités !"
-
-## 7. Quelques Utilitaires Pratiques pour Débuter
-* `cat <fichier>` : Affiche tout le contenu d'un fichier (idéal pour les petits fichiers).
-* `less <fichier>` : Affiche le contenu d'un fichier page par page (idéal pour les gros fichiers, utilisez `q` pour quitter, flèches pour naviguer).
-* `head <fichier>` : Affiche les 10 premières lignes d'un fichier.
-    * `head -n 5 <fichier>` : Affiche les 5 premières lignes.
-* `tail <fichier>` : Affiche les 10 dernières lignes d'un fichier.
-    * `tail -n 5 <fichier>` : Affiche les 5 dernières lignes.
-    * `tail -f <fichier_log>` : Très utile pour suivre un fichier de log en temps réel (les nouvelles lignes s'affichent au fur et à mesure). `Ctrl + C` pour arrêter.
-* `clear` : Efface l'écran du terminal (pour y voir plus clair).
 
 C'est un bon point de départ ! N'hésitez pas à expérimenter (dans des dossiers de test au début pour ne rien casser d'important). La pratique est la clé.
