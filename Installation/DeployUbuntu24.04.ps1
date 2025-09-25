@@ -48,6 +48,54 @@ function Run-Command($cmd, $desc) {
     }
 }
 
+function Test-SensitiveInfo($text, $variableName = "") {
+    <#
+    .SYNOPSIS
+    Vérifie la présence d'informations sensibles dans le texte ou les variables.
+    
+    .DESCRIPTION
+    Cette fonction analyse le contenu pour détecter des informations potentiellement sensibles comme :
+    - Chemins personnels (AppData, profils utilisateur)
+    - Motifs de mots de passe ou clés
+    - Informations système sensibles
+    
+    .PARAMETER text
+    Le texte à analyser
+    
+    .PARAMETER variableName
+    Nom de la variable analysée (optionnel, pour le contexte)
+    
+    .EXAMPLE
+    Test-SensitiveInfo $targetDir "targetDir"
+    #>
+    
+    $sensitivePatterns = @(
+        @{ Pattern = '\\Users\\[^\\]+'; Description = "Chemin utilisateur personnel" }
+        @{ Pattern = '\\AppData\\'; Description = "Répertoire de données d'application utilisateur" }
+        @{ Pattern = 'password|pwd|pass|secret|key|token'; Description = "Motif de credential potentiel"; CaseSensitive = $false }
+        @{ Pattern = '[A-Za-z0-9+/]{20,}={0,2}'; Description = "Chaîne encodée en Base64 potentielle" }
+        @{ Pattern = '\$env:USERNAME|\$env:USERPROFILE'; Description = "Variable d'environnement utilisateur" }
+        @{ Pattern = 'localhost|127\.0\.0\.1'; Description = "Référence à l'hôte local" }
+    )
+    
+    $warnings = @()
+    
+    foreach ($pattern in $sensitivePatterns) {
+        $regex = if ($pattern.CaseSensitive -eq $false) { 
+            [regex]::new($pattern.Pattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+        } else { 
+            [regex]::new($pattern.Pattern)
+        }
+        
+        if ($regex.IsMatch($text)) {
+            $contextInfo = if ($variableName) { " dans la variable '$variableName'" } else { "" }
+            $warnings += "[SENSIBLE] $($pattern.Description) détectée$contextInfo : '$text'"
+        }
+    }
+    
+    return $warnings
+}
+
 # 1. Reglage des préférences de WSL
 Write-Host "=== Configuration WSL ===" -ForegroundColor Magenta
 
@@ -80,6 +128,36 @@ if ($customDir) {
 # Mise à jour pré-release WSL
 $updatePre = Ask-YesNo "Mettre à jour WSL en version pré-release ?"
 
+# --- Vérification des informations sensibles ---
+Write-Host "`n=== Vérification des informations sensibles ===" -ForegroundColor Yellow
+
+$allWarnings = @()
+
+# Vérifier le répertoire cible si personnalisé
+if ($customDir) {
+    $warnings = Test-SensitiveInfo $targetDir "targetDir"
+    $allWarnings += $warnings
+}
+
+# Vérifier le nom de distribution choisi
+$warnings = Test-SensitiveInfo $distroDisplay "distroDisplay"
+$allWarnings += $warnings
+
+# Afficher les avertissements
+if ($allWarnings.Count -gt 0) {
+    Write-Host "`nAvertissements de sécurité détectés :" -ForegroundColor Red
+    foreach ($warning in $allWarnings) {
+        Write-Host "  $warning" -ForegroundColor Yellow
+    }
+    $continue = Ask-YesNo "`nContinuer malgré ces avertissements ?"
+    if (-not $continue) {
+        Write-Host "Installation annulée par l'utilisateur." -ForegroundColor Red
+        Read-Host "Appuie sur [Entrée] pour fermer le terminal."
+        exit 0
+    }
+} else {
+    Write-Host "Aucune information sensible détectée." -ForegroundColor Green
+}
 
 # --- Récapitulatif ---
 
